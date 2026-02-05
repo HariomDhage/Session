@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    container_name: session-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - session-network
+
+  # Main Session Service API
+  app:
+    build: .
+    container_name: session-service
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/sessions
+      - WEBHOOK_URL=http://mock_webhook:8001/webhook
+      - WEBHOOK_ENABLED=true
+      - DEBUG=false
+      - DISABLE_RATE_LIMIT=true  # Disable for development/testing
+    depends_on:
+      db:
+        condition: service_healthy
+      mock_webhook:
+        condition: service_started
+    # Volume mount disabled - use image code directly
+    # volumes:
+    #   - ./app:/app/app
+    restart: unless-stopped
+    networks:
+      - session-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: session-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sessions
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - session-network
+
+  # Mock Webhook Server (External Instruction Delivery Service)
+  mock_webhook:
+    build: ./mock_webhook
+    container_name: mock-webhook
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    networks:
+      - session-network
+
+volumes:
+  postgres_data:
+
+networks:
+  session-network:
+    driver: bridge

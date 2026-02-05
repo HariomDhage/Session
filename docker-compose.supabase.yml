@@ -1,0 +1,39 @@
+# Docker Compose for Supabase (Production/Demo)
+# Usage: docker-compose -f docker-compose.supabase.yml up --build
+
+version: '3.8'
+
+services:
+  # Main Session Service API
+  app:
+    build: .
+    container_name: session-service
+    ports:
+      - "8000:8000"
+    environment:
+      # Replace with your Supabase connection string
+      # Format: postgresql+asyncpg://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+      - DATABASE_URL=${DATABASE_URL}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://mock_webhook:8001/webhook}
+      - WEBHOOK_ENABLED=${WEBHOOK_ENABLED:-true}
+      - DEBUG=false
+    depends_on:
+      mock_webhook:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - session-network
+
+  # Mock Webhook Server (External Instruction Delivery Service)
+  mock_webhook:
+    build: ./mock_webhook
+    container_name: mock-webhook
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+    networks:
+      - session-network
+
+networks:
+  session-network:
+    driver: bridge
