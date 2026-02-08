@@ -11,9 +11,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
 
-    # Database - supports both local PostgreSQL and Supabase
-    # For Supabase: postgresql+asyncpg://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
-    # For local: postgresql+asyncpg://postgres:postgres@db:5432/sessions
+    # Database
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@db:5432/sessions"
 
     # External Services

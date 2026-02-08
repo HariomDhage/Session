@@ -33,7 +33,7 @@ A backend service for tracking user sessions with an AI agent. Built with FastAP
 ### Prerequisites
 
 - Docker and Docker Compose
-- (Optional) PostgreSQL or Supabase account for production
+- (Optional) PostgreSQL for production deployment
 
 ### Running with Docker Compose (Recommended)
 
@@ -100,22 +100,6 @@ set VITE_API_URL=http://localhost:8000/api/v1
 
 # Run frontend
 npm run dev
-```
-
-### Running with Supabase (Production)
-
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Get your connection string from Project Settings > Database
-3. Create a `.env` file:
-
-```bash
-DATABASE_URL=postgresql+asyncpg://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
-```
-
-4. Run:
-
-```bash
-docker-compose -f docker-compose.supabase.yml up --build
 ```
 
 ## Frontend Dashboard
