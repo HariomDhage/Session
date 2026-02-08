@@ -5,15 +5,12 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: development
+      target: production
+      args:
+        - VITE_API_URL=http://localhost:8000/api/v1
     container_name: session-frontend
     ports:
-      - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:8000/api/v1
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
+      - "3000:80"
     depends_on:
       - app
     restart: unless-stopped

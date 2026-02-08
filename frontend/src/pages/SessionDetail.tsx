@@ -8,8 +8,6 @@ import {
   CheckCircle,
   AlertCircle,
   Send,
-  Play,
-  Square,
   RefreshCw,
 } from 'lucide-react'
 import { sessionApi, messageApi, progressApi, Session, Message, NextStepResponse } from '../services/api'
